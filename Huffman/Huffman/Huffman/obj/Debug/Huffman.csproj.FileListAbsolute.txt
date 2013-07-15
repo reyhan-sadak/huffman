@@ -1,0 +1,6 @@
+D:\C#\Huffman\Huffman\Huffman\bin\Debug\Huffman.exe.config
+D:\C#\Huffman\Huffman\Huffman\bin\Debug\Huffman.exe
+D:\C#\Huffman\Huffman\Huffman\bin\Debug\Huffman.pdb
+D:\C#\Huffman\Huffman\Huffman\obj\Debug\Huffman.csprojResolveAssemblyReference.cache
+D:\C#\Huffman\Huffman\Huffman\obj\Debug\Huffman.exe
+D:\C#\Huffman\Huffman\Huffman\obj\Debug\Huffman.pdb
