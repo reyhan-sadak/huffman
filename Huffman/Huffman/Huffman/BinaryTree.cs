@@ -130,6 +130,26 @@ namespace Huffman
             throw new ArgumentException("Object is not a Binary Tree!");
         }
 
+        public uint GetHeight()
+        {
+            if (Left == null && Right == null)
+            {
+                return 0;
+            }
+            else if(Left == null)
+            {
+                return 1 + Right.GetHeight();
+            }
+            else if (Right == null)
+            {
+                return 1 + Left.GetHeight();
+            }
+            else
+            {
+                return 1 + Math.Max(Left.GetHeight(), Right.GetHeight());
+            }
+        }
+
         public override string ToString()
         {
             string tree = "( " + Node + " , " + ((Left == null) ? " null " : Left.ToString()) + " , " + ((Right == null) ? " null " : Right.ToString()) + " )";

@@ -10,8 +10,8 @@ namespace Huffman
     class HuffmanDecompressor
     {
         private string m_inputFilePath;
-        private Dictionary<byte, byte>[] m_HuffmanDictionary;
-        private byte[][] m_filesBytes;
+        private Dictionary<uint, byte>[] m_HuffmanDictionary;
+        private uint[][] m_filesUints;
         private string[] m_inputFilesNames;
         private int m_numberOfFiles;
         private int[] m_numberOfUnusedBits;
@@ -27,8 +27,8 @@ namespace Huffman
 
             // Read the number of files
             m_numberOfFiles = bReader.ReadInt32();
-            m_HuffmanDictionary = new Dictionary<byte, byte>[m_numberOfFiles];
-            m_filesBytes = new byte[m_numberOfFiles][];
+            m_HuffmanDictionary = new Dictionary<uint, byte>[m_numberOfFiles];
+            m_filesUints = new uint[m_numberOfFiles][];
             m_inputFilesNames = new string[m_numberOfFiles];
             m_numberOfUnusedBits = new int[m_numberOfFiles];
 
@@ -45,26 +45,26 @@ namespace Huffman
                 }
                 UTF8Encoding encoding = new UTF8Encoding();
                 m_inputFilesNames[filesIndex] = encoding.GetString(readBytes);
-                m_HuffmanDictionary[filesIndex] = new Dictionary<byte, byte>();
+                m_HuffmanDictionary[filesIndex] = new Dictionary<uint, byte>();
                 // Read the Huffman dictionary
                 int numberOfTheItemsInTheDictionary = bReader.ReadInt32();
                 Console.WriteLine("Reverse Huffman dictionary");
                 for (int dictionaryIndex = 0; dictionaryIndex < numberOfTheItemsInTheDictionary; dictionaryIndex++)
                 {
                     byte value = bReader.ReadByte();
-                    byte key = bReader.ReadByte();
+                    uint key = bReader.ReadUInt32();
                     m_HuffmanDictionary[filesIndex][key] = value;
                     Console.WriteLine("HuffmanDict[ " + key + " ] = " + m_HuffmanDictionary[filesIndex][key]);
                 }
 
-                int bytesNumber = bReader.ReadInt32();
+                int UIntsNumber = bReader.ReadInt32();
                 m_numberOfUnusedBits[filesIndex] = bReader.ReadInt32();
-                m_filesBytes[filesIndex] = new byte[bytesNumber];
-                for (int bytesIndex = 0; bytesIndex < bytesNumber; bytesIndex++)
+                m_filesUints[filesIndex] = new uint[UIntsNumber];
+                for (int bytesIndex = 0; bytesIndex < UIntsNumber; bytesIndex++)
                 {
-                    byte readByte = bReader.ReadByte();
-                    m_filesBytes[filesIndex][bytesIndex] = readByte;
-                    //Console.WriteLine("Reading byte from the archived file :: " + readByte);
+                    uint readUInt = bReader.ReadUInt32();
+                    m_filesUints[filesIndex][bytesIndex] = readUInt;
+                    Console.WriteLine("Reading byte from the archived file :: " + readUInt);
                 }
             }
 
@@ -90,33 +90,38 @@ namespace Huffman
                 FileStream fs = new FileStream(filePath, FileMode.Create);
                 BinaryWriter bWriter = new BinaryWriter(fs);
 
-                int bytesNumber = m_filesBytes[filesIndex].Length;
-                byte value = 0;
-                for (int bytesIndex = 0; bytesIndex < bytesNumber; bytesIndex++)
+                int UIntsNumber = m_filesUints[filesIndex].Length;
+                uint value = 1;
+                for (int uintIndex = 0; uintIndex < UIntsNumber; uintIndex++)
                 {
-                    byte currentByte = m_filesBytes[filesIndex][bytesIndex];
-                    byte keyIndex = Utility.BYTE_PRIMARY_INDEX;
+                    uint currentUInt = m_filesUints[filesIndex][uintIndex];
+                    int keyIndex = Utility.UINT_PRIMARY_INDEX;
                     value *= 2;
-                    value += Utility.GetBitAtIndexOfByte(currentByte, keyIndex);
+                    value += Utility.GetBitAtIndexOfUint(currentUInt, keyIndex) ? 1u : 0u;
                     int limitOfTheLoop = 0;
-                    if (bytesIndex == bytesNumber - 1)
+                    if (uintIndex == UIntsNumber - 1)
                     {
                         limitOfTheLoop = m_numberOfUnusedBits[filesIndex];
                     }
                     for (; keyIndex > limitOfTheLoop; keyIndex--)
                     {
-                        byte valueInTheMap = value;
+                        uint valueInTheMap = value;
                         if (m_HuffmanDictionary[filesIndex].ContainsKey(valueInTheMap))
                         {
-                            //Console.WriteLine("Writing byte :: " + m_HuffmanDictionary[filesIndex][value]);
+                            Console.WriteLine("Writing byte :: " + m_HuffmanDictionary[filesIndex][value]);
                             byte toWriteByte = m_HuffmanDictionary[filesIndex][value];
                             bWriter.Write(toWriteByte);
-                            value = Utility.GetBitAtIndexOfByte(currentByte, (byte)(keyIndex - 1));
+                            value = 1;
+                            if (keyIndex > limitOfTheLoop + 1)
+                            {
+                                value *= 2;
+                                value += Utility.GetBitAtIndexOfUint(currentUInt, (keyIndex - 1)) ? 1u : 0u;
+                            }
                         }
                         else if (keyIndex > 1)
                         {
-                                value *= 2;
-                                value += Utility.GetBitAtIndexOfByte(currentByte, (byte)(keyIndex - 1));
+                            value *= 2;
+                            value += Utility.GetBitAtIndexOfUint(currentUInt, (keyIndex - 1)) ? 1u : 0u;
                         }
                     }
                 }

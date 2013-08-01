@@ -12,7 +12,7 @@ namespace Huffman
     {
         private BinaryTree[][] m_HuffmanTree;
         private int[][] m_ByteFrequencies;
-        private Dictionary<byte, byte>[] m_HuffmanDictionary;
+        private Dictionary<byte, uint>[] m_HuffmanDictionary;
         private byte[][] m_filesBytes;
         private string m_outputFilePath;
         private string[] m_inputFilesNames;
@@ -24,7 +24,7 @@ namespace Huffman
             int fileListLength = i_filesList.Length;
             m_ByteFrequencies = new int[fileListLength][];
             m_HuffmanTree = new BinaryTree[fileListLength][];
-            m_HuffmanDictionary = new Dictionary<byte, byte>[fileListLength];
+            m_HuffmanDictionary = new Dictionary<byte, uint>[fileListLength];
             m_filesBytes = new byte[fileListLength][];
             m_inputFilesNames = new string[fileListLength];
 
@@ -51,61 +51,78 @@ namespace Huffman
 
             // Write the number of files
             bWriter.Write(filesNumber);
+            Console.WriteLine("Writing files number = " + filesNumber);
 
-            byte currentByteToWrite = 0;
-            byte nextByteToWrite = 0;
+            uint currentUIntToWrite = 0;
+            uint nextByteToWrite = 0;
             int currentByteToWriteIndex = 0;
             for (int fileIndex = 0; fileIndex < filesNumber; fileIndex++)
             {
                 // Write the file name
                 int lenghtOfTheName = m_inputFilesNames[fileIndex].Length;
                 bWriter.Write(lenghtOfTheName);
+                Console.WriteLine("Writing lenght of the name = " + lenghtOfTheName);
                 for (int nameIndex = 0; nameIndex < lenghtOfTheName; nameIndex++)
                 {
                     char character = m_inputFilesNames[fileIndex][nameIndex];
                     bWriter.Write((byte)character);
+                    Console.WriteLine("Writing character = " + character);
                 }
                 // write the Huffman dictionary
                 int numberOfItemsInTheDictionary = m_HuffmanDictionary[fileIndex].Keys.ToArray().Length;
                 bWriter.Write(numberOfItemsInTheDictionary);
+                Console.WriteLine("Writing number of items in the dict = " + numberOfItemsInTheDictionary);
                 foreach (byte key in m_HuffmanDictionary[fileIndex].Keys)
                 {
                     bWriter.Write(key);
-                    bWriter.Write(m_HuffmanDictionary[fileIndex][key]);
+                    uint value = m_HuffmanDictionary[fileIndex][key];
+                    bWriter.Write(value);
+                    Console.WriteLine("Writing key = " + key);
+                    Console.WriteLine("Writing value = " + value);
                 }
 
                 ArrayList listOfTheNewBytes = new ArrayList();
                 int bytesNumber = m_filesBytes[fileIndex].Length;
-                int numberOfUnusedBitsInTheLastByte = 0;
+                int numberOfUnusedBitsInTheLastUInt = 0;
                 for (int byteIndex = 0; byteIndex < bytesNumber; byteIndex++)
                 {
                     byte singleByte = m_filesBytes[fileIndex][byteIndex];
-                    byte codedValue = m_HuffmanDictionary[fileIndex][singleByte];
+                    uint codedValue = m_HuffmanDictionary[fileIndex][singleByte];
 
-                    currentByteToWriteIndex = Utility.AppendMeaningBitsOfByteToByte(ref currentByteToWrite, ref nextByteToWrite, codedValue, currentByteToWriteIndex);
-                    if (currentByteToWriteIndex >= Utility.BYTE_PRIMARY_INDEX || byteIndex == bytesNumber - 1)
+                    int toIndex = Utility.UINT_PRIMARY_INDEX;
+                    while ((Utility.GetBitAtIndexOfUint(codedValue, toIndex)) == false && toIndex > 0)
                     {
-                        listOfTheNewBytes.Add(currentByteToWrite);
-                        currentByteToWrite = nextByteToWrite;
+                        toIndex--;
+                    }
+                    codedValue = codedValue << (Utility.UINT_PRIMARY_INDEX - toIndex + 1);
+                    codedValue = codedValue >> (Utility.UINT_PRIMARY_INDEX - toIndex + 1);
+
+                    currentByteToWriteIndex = Utility.AppendMeaningBitsOfUintToUint(ref currentUIntToWrite, ref nextByteToWrite, codedValue, toIndex - 1, currentByteToWriteIndex);
+                    if (currentByteToWriteIndex >= Utility.UINT_PRIMARY_INDEX || byteIndex == bytesNumber - 1)
+                    {
+                        listOfTheNewBytes.Add(currentUIntToWrite);
+                        currentUIntToWrite = nextByteToWrite;
                         nextByteToWrite = 0;
-                        currentByteToWriteIndex %= Utility.BYTE_PRIMARY_INDEX;
+                        currentByteToWriteIndex %= Utility.UINT_PRIMARY_INDEX;
                         if (byteIndex == bytesNumber - 1)
                         {
-                            numberOfUnusedBitsInTheLastByte = Utility.BYTE_PRIMARY_INDEX - currentByteToWriteIndex;
+                            numberOfUnusedBitsInTheLastUInt = Utility.UINT_PRIMARY_INDEX - currentByteToWriteIndex;
                         }
                     }
                 }
 
-                int numberOfTheNewBytes = listOfTheNewBytes.ToArray().Length;
-                // Write the number of the bytes
-                bWriter.Write(numberOfTheNewBytes);
+                int numberOfTheNewUints = listOfTheNewBytes.ToArray().Length;
+                // Write the number of the uints
+                bWriter.Write(numberOfTheNewUints);
+                Console.WriteLine("Writing number of the uints = " + numberOfTheNewUints);
                 // Write the number of the unused bits in the last byte
-                bWriter.Write(numberOfUnusedBitsInTheLastByte);
-                for (int newBytesIndex = 0; newBytesIndex < numberOfTheNewBytes; newBytesIndex++)
+                bWriter.Write(numberOfUnusedBitsInTheLastUInt);
+                Console.WriteLine("Writing number of the unused bits in the last byte = " + numberOfUnusedBitsInTheLastUInt);
+                for (int newUIntsIndex = 0; newUIntsIndex < numberOfTheNewUints; newUIntsIndex++)
                 {
-                    currentByteToWrite = (byte)listOfTheNewBytes.ToArray()[newBytesIndex];
-                    //Console.WriteLine("Writing byte in the archived file :: " + currentByteToWrite);
-                    bWriter.Write(currentByteToWrite);
+                    currentUIntToWrite = (uint)listOfTheNewBytes.ToArray()[newUIntsIndex];
+                    bWriter.Write(currentUIntToWrite);
+                    Console.WriteLine("Writing UInt in the archived file = " + currentUIntToWrite);
                 }
                 Console.WriteLine();
                 Console.WriteLine();
@@ -144,10 +161,10 @@ namespace Huffman
             SortHuffmanTreesToIndex(i_fileIndex);
             BinaryTree finalHuffmanTree = m_HuffmanTree[i_fileIndex][2 * positiveCount - 2];
             //Console.WriteLine(finalHuffmanTree);
-            m_HuffmanDictionary[i_fileIndex] = new Dictionary<byte, byte>();
-            CreateHuffmanMap(i_fileIndex, ref finalHuffmanTree, 1);
-            //Console.WriteLine(finalHuffmanTree);
-            //Console.WriteLine();
+            Console.WriteLine("Huffman tree height = " + finalHuffmanTree.GetHeight());
+            m_HuffmanDictionary[i_fileIndex] = new Dictionary<byte, uint>();
+            CreateHuffmanMap(i_fileIndex, ref finalHuffmanTree, 1u);
+            Console.WriteLine();
 
             foreach (byte key in m_HuffmanDictionary[i_fileIndex].Keys)
             {
@@ -192,20 +209,24 @@ namespace Huffman
             Array.Sort(m_HuffmanTree[i_fileIndex], delegate(BinaryTree first, BinaryTree second){ return(second == null) ? (first == null)? 0 : -1 : (first == null)? 1 : first.CompareTo(second);});
         }
 
-        private void CreateHuffmanMap(int i_fileIndex, ref BinaryTree i_tree, byte i_code)
+        private void CreateHuffmanMap(int i_fileIndex, ref BinaryTree i_tree, uint i_code)
         {
             if (i_tree.Left != null)
             {
                 BinaryTree tempTree = i_tree.Left;
-                CreateHuffmanMap(i_fileIndex, ref tempTree, (byte)(2 * i_code + 0));
+                CreateHuffmanMap(i_fileIndex, ref tempTree, (2 * i_code + 0));
             }
             if (i_tree.Right != null)
             {
                 BinaryTree tempTree = i_tree.Right;
-                CreateHuffmanMap(i_fileIndex, ref tempTree, (byte)(2 * i_code + 1));
+                CreateHuffmanMap(i_fileIndex, ref tempTree, (2 * i_code + 1));
             }
             if (i_tree.Left == null && i_tree.Right == null)
             {
+                if (m_HuffmanDictionary[i_fileIndex].ContainsValue(i_code))
+                {
+                    throw new System.ArgumentException("Code alrady in the Huffman map");
+                }
                 m_HuffmanDictionary[i_fileIndex][i_tree.Node.Byte] = i_code;
             }
         }

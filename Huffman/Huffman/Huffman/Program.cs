@@ -11,8 +11,8 @@ namespace Huffman
         static void Main(string[] args)
         {
             System.ConsoleKeyInfo KInfo;
-            //string[] files = { "D:\\C#\\file1.bin", "D:\\C#\\picture.jpg", "D:\\C#\\file2.bin" };
-            string[] files = { "D:\\C#\\file1.bin", };
+            //string[] files = { "D:\\C#\\file1.bin", "D:\\C#\\picture.jpg" };//, "D:\\C#\\file2.bin" };
+            string[] files = { /*"D:\\C#\\picture.jpg", */ "D:\\C#\\file2.bin", "D:\\C#\\file1.bin", };
             string outputFile = "D:\\C#\\output.bin";
             if (false)//args.Length < 2)
             {
