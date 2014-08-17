@@ -4,9 +4,3 @@ D:\C#\Huffman\Huffman\Huffman\bin\Debug\Huffman.pdb
 D:\C#\Huffman\Huffman\Huffman\obj\Debug\Huffman.csprojResolveAssemblyReference.cache
 D:\C#\Huffman\Huffman\Huffman\obj\Debug\Huffman.exe
 D:\C#\Huffman\Huffman\Huffman\obj\Debug\Huffman.pdb
-C:\Users\Reyhan\Documents\GitHub\huffman\Huffman\Huffman\Huffman\bin\Debug\Huffman.exe.config
-C:\Users\Reyhan\Documents\GitHub\huffman\Huffman\Huffman\Huffman\obj\Debug\Huffman.exe
-C:\Users\Reyhan\Documents\GitHub\huffman\Huffman\Huffman\Huffman\obj\Debug\Huffman.pdb
-C:\Users\Reyhan\Documents\GitHub\huffman\Huffman\Huffman\Huffman\obj\Debug\Huffman.csprojResolveAssemblyReference.cache
-C:\Users\Reyhan\Documents\GitHub\huffman\Huffman\Huffman\Huffman\bin\Debug\Huffman.exe
-C:\Users\Reyhan\Documents\GitHub\huffman\Huffman\Huffman\Huffman\bin\Debug\Huffman.pdb

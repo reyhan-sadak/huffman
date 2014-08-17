@@ -21,8 +21,8 @@ namespace Huffman
             }
         }
 
-        private int m_frequency;
-        public int Frequency
+        private uint m_frequency;
+        public uint Frequency
         {
             get
             {
@@ -50,14 +50,14 @@ namespace Huffman
             m_bIsSet = false;
         }
 
-        public Node(byte i_byte, int i_freq)
+        public Node(byte i_byte, uint i_freq)
         {
             Byte = i_byte;
             Frequency = i_freq;
             m_bIsSet = true;
         }
 
-        public Node(int i_freq)
+        public Node(uint i_freq)
         {
             Byte = 0;
             Frequency = i_freq;

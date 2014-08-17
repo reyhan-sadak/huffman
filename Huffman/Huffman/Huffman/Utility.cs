@@ -8,59 +8,56 @@ namespace Huffman
 {
     class Utility
     {
-        //public const byte BYTE_PRIMARY_INDEX = 8;
-        public const int UINT_PRIMARY_INDEX = 32;
+        public static bool b_use_debug = false;
+        public static bool b_use_info = true;
+        public const int INT_PRIMARY_INDEX = 32;
 
-        /*public static byte GetBitAtIndexOfByte(byte i_byte, byte i_bitIndex)
+        public static byte GetBitAtIndexOfByte(uint i_byte, byte i_bitIndex)
         {
-            int result = (i_byte & (1 << i_bitIndex - 1)) == 0 ? 0 : 1;
+            uint result = (uint)((i_byte & (1 << i_bitIndex - 1)) == 0 ? 0 : 1);
             return (byte)(result);
-        }*/
-
-        public static bool GetBitAtIndexOfUint(uint i_uint, int i_bitIndex)
-        {
-            bool result;
-            if (i_bitIndex == UINT_PRIMARY_INDEX)
-            {
-                uint primaryBit = i_uint >> (UINT_PRIMARY_INDEX - 1);
-                result = (primaryBit != 0u);
-            }
-            else
-            {
-                uint temp = (uint)(1 << i_bitIndex - 1);
-                result = (i_uint & temp) != 0u;
-            }
-            return result;
         }
 
-        public static int AppendMeaningBitsOfUintToUint(ref uint o_firstUint, ref uint o_secondUint, uint i_uint, int bitsNumber, int i_fromIndex)
+        public static int AppendMeaningBitsOfByteToByte(ref uint o_firstByte, ref uint o_secondByte, uint i_byte, int bitsNumber, int i_fromIndex)
         {
             int toIndex = bitsNumber;
-            //while ((Utility.GetBitAtIndexOfUint(i_uint, (byte)toIndex)) == 0 && toIndex > 1)
-            //{
-            //    toIndex--;
-            //}
-            //i_uint = (uint)(i_uint << (Utility.UINT_PRIMARY_INDEX - toIndex + 1));
-            //i_uint = (uint)(i_uint >> (Utility.UINT_PRIMARY_INDEX - toIndex + 1));
 
-            int remainingBits = UINT_PRIMARY_INDEX - i_fromIndex;
+            int remainingBits = INT_PRIMARY_INDEX - i_fromIndex;
             if (remainingBits >= toIndex)
             {
-                i_uint = (uint)(i_uint << remainingBits - toIndex);
-                o_firstUint |= i_uint;
+                i_byte = (uint)(i_byte << remainingBits - toIndex);
+                o_firstByte |= i_byte;
             }
             else
             {
                 int notEnoughBits = toIndex - remainingBits;
-                uint copyOfTheByte = i_uint;
+                uint copyOfTheByte = i_byte;
 
-                i_uint = (uint)(i_uint >> notEnoughBits);
-                o_firstUint |= i_uint;
+                i_byte = i_byte >> notEnoughBits;
+                o_firstByte |= i_byte;
 
-                copyOfTheByte = (uint)(copyOfTheByte << (UINT_PRIMARY_INDEX - notEnoughBits));
-                o_secondUint |= copyOfTheByte;
+                copyOfTheByte = copyOfTheByte << (INT_PRIMARY_INDEX - notEnoughBits);
+                o_secondByte |= copyOfTheByte;
             }
             return i_fromIndex + toIndex;
+        }
+
+        public static void PrintDebug(string iMsg="")
+        {
+            if (Utility.b_use_debug)
+            {
+                Console.WriteLine("Debug");
+                Console.WriteLine(iMsg);
+            }
+        }
+
+        public static void PrintInfo(string iMsg = "")
+        {
+            if (Utility.b_use_info)
+            {
+                Console.WriteLine("Info");
+                Console.WriteLine(iMsg);
+            }
         }
     }
 }
