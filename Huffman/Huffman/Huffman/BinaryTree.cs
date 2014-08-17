@@ -94,7 +94,14 @@ namespace Huffman
                 return false;
             if (i_second.IsInTheCurrentLevel && !i_first.IsInTheCurrentLevel)
                 return true;
-            return i_first.Node.Frequency > i_second.Node.Frequency;
+            /*if (i_first.Node.Frequency == i_second.Node.Frequency)
+                return i_first.GetHeight() > i_second.GetHeight();
+            else
+                return i_first.Node.Frequency > i_second.Node.Frequency;*/
+            if (i_first.GetHeight() == i_second.GetHeight())
+                return i_first.Node.Frequency > i_second.Node.Frequency;
+            else
+                return i_first.GetHeight() > i_second.GetHeight();
         }
 
         public static bool operator <(BinaryTree i_first, BinaryTree i_second)
@@ -107,7 +114,14 @@ namespace Huffman
                 return true;
             if (i_second.IsInTheCurrentLevel && !i_first.IsInTheCurrentLevel)
                 return false;
-            return i_first.Node.Frequency < i_second.Node.Frequency;
+            /*if (i_first.Node.Frequency == i_second.Node.Frequency)
+                return i_first.GetHeight() < i_second.GetHeight();
+            else
+                return i_first.Node.Frequency < i_second.Node.Frequency;*/
+            if (i_first.GetHeight() == i_second.GetHeight())
+                return i_first.Node.Frequency < i_second.Node.Frequency;
+            else
+                return i_first.GetHeight() < i_second.GetHeight();
         }
 
         public int CompareTo(object obj)

@@ -8,7 +8,7 @@ namespace Huffman
 {
     class Utility
     {
-        public static bool b_use_debug = false;
+        public static bool b_use_debug = true;
         public static bool b_use_info = true;
         public const int INT_PRIMARY_INDEX = 32;
 
@@ -46,8 +46,7 @@ namespace Huffman
         {
             if (Utility.b_use_debug)
             {
-                Console.WriteLine("Debug");
-                Console.WriteLine(iMsg);
+                Console.WriteLine("Debug: " + iMsg);
             }
         }
 
@@ -55,8 +54,7 @@ namespace Huffman
         {
             if (Utility.b_use_info)
             {
-                Console.WriteLine("Info");
-                Console.WriteLine(iMsg);
+                Console.WriteLine("Info: " + iMsg);
             }
         }
     }

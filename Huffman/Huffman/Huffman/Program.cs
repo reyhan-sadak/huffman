@@ -12,7 +12,7 @@ namespace Huffman
         {
             System.ConsoleKeyInfo KInfo;
             string baseFolderPath = "..\\..\\..\\..\\";
-            string[] files = { baseFolderPath + "file1.bin", baseFolderPath + "file2.bin" };
+            string[] files = { baseFolderPath + "file3.bin" };
             string outputFile = baseFolderPath + "output.bin";
             string outputDirectory = baseFolderPath + "output\\";
 
